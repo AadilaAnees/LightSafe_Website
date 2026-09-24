@@ -45,19 +45,19 @@ const partnerBenefits = [
 
 const teamMembers = [
   {
-    name: 'Nadira Perera',
+    name: 'Aadhila Anees',
     role: 'Founder',
-    bio: 'A public-health advocate focused on dignity-first women’s care and grassroots safety.',
+    bio: 'Leads LightSafe with a mission to restore dignity, safety, and confidence for women in everyday emergencies.',
   },
   {
-    name: 'Maya Fernando',
+    name: 'Hiruni De Jodeth',
     role: 'Tech Lead',
-    bio: 'Builds privacy-first product systems that balance speed, safety, and trust.',
+    bio: 'Builds privacy-first product systems that balance safety, trust, and real-world usability.',
   },
   {
-    name: 'Sithuli Weerasinghe',
+    name: 'Binithi Sarithya',
     role: 'Product Lead',
-    bio: 'Turns real-woman needs into intuitive experiences that feel discreet and supportive.',
+    bio: 'Shapes the user experience around the real needs of women seeking quick, discreet, and compassionate help.',
   },
 ]
 
