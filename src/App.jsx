@@ -1,5 +1,9 @@
 import { useState } from 'react'
+import lightSafeLogo from './assets/LightSafe_Logo.png'
 import './App.css'
+
+// Recipient email where all community signups and partnership requests are delivered
+const RECIPIENT_EMAIL = 'aadhilaanees@gmail.com'
 
 const steps = [
   {
@@ -10,7 +14,7 @@ const steps = [
   },
   {
     step: '02',
-    title: '300m Anonymous Broadcast',
+    title: '1km Anonymous Broadcast',
     description: 'Verified nearby women receive instant alerts without exposing personal details or exact locations.',
     icon: 'radar',
   },
@@ -29,7 +33,7 @@ const steps = [
 ]
 
 const womenBenefits = [
-  '100% Free 300m emergency peer-support network.',
+  '100% Free 1km emergency peer-support network.',
   'Absolute privacy with zero GPS tracking and auto-deleting chats.',
   'Verified female-only safe space (NIC + Face-ID onboarding).',
   'Direct 1-on-1 health mentorship with verified doctors and AI cycle tracking.',
@@ -37,27 +41,50 @@ const womenBenefits = [
 ]
 
 const partnerBenefits = [
-  'Direct, positive brand exposure to an engaged female demographic (15–45).',
+  'Direct, positive brand exposure to an engaged female demographic.',
   'Co-branded emergency starter kits and sponsored “Good Samaritan” reward vouchers.',
   'High CSR/ESG alignment by advancing women’s health, period dignity, and transit safety.',
   'Institutional “LightSafe Care Passes” for university campuses and corporate workplaces.',
+  'Get Connected with like-minded women in STEM'
 ]
 
 const teamMembers = [
   {
-    name: 'Aadhila Anees',
-    role: 'Founder',
-    bio: 'Leads LightSafe with a mission to restore dignity, safety, and confidence for women in everyday emergencies.',
+    name: 'Aadila Anees',
+    role: 'CTO',
+    bio: 'Architects LightSafe’s zero-knowledge peer-to-peer network, cryptographic location fuzzing, and resilient offline-first emergency broadcast protocols.',
   },
   {
     name: 'Hiruni De Jodeth',
-    role: 'Tech Lead',
-    bio: 'Builds privacy-first product systems that balance safety, trust, and real-world usability.',
+    role: 'CFO',
+    bio: 'Steers financial governance, capital efficiency, and strategic sustainability partnerships with sanitary brands and corporate CSR sponsors to keep LightSafe 100% free for women.',
   },
   {
     name: 'Binithi Sarithya',
-    role: 'Product Lead',
-    bio: 'Shapes the user experience around the real needs of women seeking quick, discreet, and compassionate help.',
+    role: 'CMO',
+    bio: 'Spearheads brand storytelling, grassroots university ambassadorships, and nationwide public awareness initiatives to eliminate period poverty stigma and foster safe communities.',
+  },
+]
+
+const researchPapers = [
+  {
+    title: 'Menstrual Health in Sri Lanka: A timeline',
+    source: 'UNFPA Sri Lanka Policy Brief',
+    year: '2023',
+    tag: 'Policy Research',
+    summary:
+      'Examines how menstrual stigma, inadequate education, and limited product access restrict the rights and opportunities of women and girls, emphasizing the need to normalize menstruation and invest in menstrual health.',
+    link: 'https://srilanka.unfpa.org/en/publications/menstrual-health-sri-lanka-timeline',
+  },
+
+  {
+    title: 'Period poverty: A veiled crisis in Sri Lanka',
+    source: 'South Asia Monitor',
+    year: '2023',
+    tag: 'Economic Study',
+    summary:
+      'Addresses the economic impact and lack of menstrual product access for women in Sri Lanka, highlighting the urgent need for policy changes and social support.',
+    link: 'https://www.southasiamonitor.org/spotlight/period-poverty-veiled-crisis-sri-lanka',
   },
 ]
 
@@ -91,6 +118,8 @@ function App() {
   const [activeTab, setActiveTab] = useState('community')
   const [communityForm, setCommunityForm] = useState(defaultForm)
   const [partnerForm, setPartnerForm] = useState(partnerFormDefaults)
+  const [formSubmitting, setFormSubmitting] = useState(false)
+  const [formFeedback, setFormFeedback] = useState({ type: '', message: '' })
 
   const handleCommunityChange = (event) => {
     const { name, value, type, checked } = event.target
@@ -108,12 +137,123 @@ function App() {
     }))
   }
 
+  const handleCommunitySubmit = async (event) => {
+    event.preventDefault()
+    if (!communityForm.email && !communityForm.phone) {
+      setFormFeedback({
+        type: 'error',
+        message: 'Please provide at least your email address or phone number so we can reach you.',
+      })
+      return
+    }
+
+    setFormSubmitting(true)
+    setFormFeedback({ type: '', message: '' })
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `New LightSafe Community Interest: ${communityForm.fullName || 'Anonymous Member'}`,
+          SubmissionType: 'Community Beta Access',
+          FullName: communityForm.fullName,
+          Email: communityForm.email,
+          UniversityOrOrganization: communityForm.org,
+          PhoneNumber: communityForm.phone,
+          NotifyBetaAccess: communityForm.notify ? 'Yes' : 'No',
+        }),
+      })
+
+      if (response.ok) {
+        setFormFeedback({
+          type: 'success',
+          message: `Thank you, ${communityForm.fullName || 'friend'}! Your request has been sent. We will contact you soon!`,
+        })
+        setCommunityForm(defaultForm)
+      } else {
+        throw new Error('Server returned an error status')
+      }
+    } catch {
+      // Graceful fallback to mailto so the user can still send directly from their device
+      const subject = encodeURIComponent(`LightSafe Community Interest - ${communityForm.fullName || 'Sign Up'}`)
+      const body = encodeURIComponent(
+        `Full Name: ${communityForm.fullName}\nEmail: ${communityForm.email}\nUniversity/Org: ${communityForm.org}\nPhone: ${communityForm.phone}\nBeta Notify: ${communityForm.notify ? 'Yes' : 'No'}`
+      )
+      window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${subject}&body=${body}`
+      setFormFeedback({
+        type: 'success',
+        message: 'Your request has been initiated. We will contact you soon!',
+      })
+    } finally {
+      setFormSubmitting(false)
+    }
+  }
+
+  const handlePartnerSubmit = async (event) => {
+    event.preventDefault()
+    if (!partnerForm.businessEmail) {
+      setFormFeedback({
+        type: 'error',
+        message: 'Please provide a valid business email address for partnership inquiries.',
+      })
+      return
+    }
+
+    setFormSubmitting(true)
+    setFormFeedback({ type: '', message: '' })
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `New LightSafe Partnership Request: ${partnerForm.organizationName || 'Partner Inquiry'}`,
+          SubmissionType: 'Sponsorship / Corporate Partner',
+          Organization: partnerForm.organizationName,
+          ContactPerson: partnerForm.contactPerson,
+          BusinessEmail: partnerForm.businessEmail,
+          PartnershipType: partnerForm.partnershipType,
+          Message: partnerForm.message,
+        }),
+      })
+
+      if (response.ok) {
+        setFormFeedback({
+          type: 'success',
+          message: `Thank you! Your partnership request for ${partnerForm.organizationName || 'your organization'} has been sent. We will contact you soon!`,
+        })
+        setPartnerForm(partnerFormDefaults)
+      } else {
+        throw new Error('Server returned an error status')
+      }
+    } catch {
+      const subject = encodeURIComponent(`LightSafe Partnership Inquiry: ${partnerForm.organizationName || 'Partner'}`)
+      const body = encodeURIComponent(
+        `Organization: ${partnerForm.organizationName}\nContact Person: ${partnerForm.contactPerson}\nBusiness Email: ${partnerForm.businessEmail}\nPartnership Type: ${partnerForm.partnershipType}\nMessage:\n${partnerForm.message}`
+      )
+      window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${subject}&body=${body}`
+      setFormFeedback({
+        type: 'success',
+        message: 'Your request has been initiated. We will contact you soon!',
+      })
+    } finally {
+      setFormSubmitting(false)
+    }
+  }
+
   return (
     <div className="page-shell">
       <header className="topbar">
         <div className="container nav-wrap">
           <a href="#top" className="brand" aria-label="LightSafe home">
-            <span className="brand-mark">L</span>
+            <img src={lightSafeLogo} alt="LightSafe Logo" className="brand-logo-img" />
             <span className="brand-text">LightSafe</span>
           </a>
 
@@ -122,6 +262,7 @@ function App() {
             <a href="#how-it-works">How It Works</a>
             <a href="#benefits">Benefits</a>
             <a href="#team">Team</a>
+            <a href="#research">Research</a>
           </nav>
 
           <a href="#community" className="button button-primary small-button">
@@ -151,7 +292,7 @@ function App() {
 
               <div className="stat-row" aria-label="Impact stats">
                 <div className="stat-item">
-                  <strong>300m</strong>
+                  <strong>1km</strong>
                   <span>Local support radius</span>
                 </div>
                 <div className="stat-item">
@@ -173,6 +314,7 @@ function App() {
               <div className="phone-card">
                 <div className="phone-topbar">
                   <span className="signal-dot" />
+                  <span className="notch-pill" />
                   <span className="time">9:41</span>
                   <div className="status-icons">
                     <span className="status-signal" />
@@ -180,42 +322,135 @@ function App() {
                   </div>
                 </div>
 
-                <div className="broadcast-panel">
-                  <div className="broadcast-header">
-                    <span className="tiny-label">Live broadcast</span>
-                    <span className="badge badge-soft">300m</span>
+                <div className="phone-map-screen">
+                  {/* Floating map search bar & badge */}
+                  <div className="map-search-bar">
+                    <span className="search-dot" />
+                    <span className="search-text">1km Safe Zone Active</span>
+                    <span className="live-tag">LIVE</span>
                   </div>
-                  <div className="radar-scan" aria-hidden="true">
-                    <span className="pulse" />
+
+                  {/* Real Map Layer with streets, blocks, parks, water */}
+                  <div className="real-map-canvas">
+                    <svg className="map-svg" viewBox="0 0 340 320" xmlns="http://www.w3.org/2000/svg" aria-label="Live LightSafe Emergency Map">
+                      <defs>
+                        <linearGradient id="waterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#dfd1e8" stopOpacity="0.8" />
+                          <stop offset="100%" stopColor="#cdb5dc" stopOpacity="0.9" />
+                        </linearGradient>
+                        <radialGradient id="safeRadarGrad" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stopColor="rgba(237, 76, 103, 0.25)" />
+                          <stop offset="70%" stopColor="rgba(212, 111, 140, 0.12)" />
+                          <stop offset="100%" stopColor="rgba(237, 76, 103, 0)" />
+                        </radialGradient>
+                      </defs>
+
+                      {/* Map Land Background */}
+                      <rect width="340" height="320" fill="#fcf9fb" />
+
+                      {/* Urban Park Greenery */}
+                      <path d="M 12 18 Q 50 8 85 30 Q 105 52 80 92 Q 45 105 18 80 Z" fill="#ebf5ee" stroke="#d5ebd9" strokeWidth="1" />
+                      <text x="30" y="58" fill="#4d7f5d" fontSize="7.5" fontWeight="700" letterSpacing="0.4">VICTORIA PARK</text>
+
+                      {/* Secondary Park / Campus Quad */}
+                      <rect x="230" y="210" width="95" height="65" rx="8" fill="#ebf5ee" stroke="#d5ebd9" strokeWidth="1" />
+                      <text x="242" y="246" fill="#4d7f5d" fontSize="7" fontWeight="700">CAMPUS GREEN</text>
+
+                      {/* City Building Blocks */}
+                      <rect x="24" y="140" width="44" height="46" rx="4" fill="#eee7ed" />
+                      <rect x="76" y="140" width="40" height="36" rx="4" fill="#eee7ed" />
+                      <rect x="24" y="200" width="52" height="62" rx="4" fill="#eee7ed" />
+                      <rect x="84" y="190" width="34" height="72" rx="4" fill="#eee7ed" />
+
+                      <rect x="195" y="26" width="60" height="44" rx="4" fill="#eee7ed" />
+                      <rect x="264" y="26" width="52" height="58" rx="4" fill="#eee7ed" />
+                      <rect x="216" y="84" width="44" height="42" rx="4" fill="#eee7ed" />
+
+                      {/* Water Canal / Lake Edge */}
+                      <path d="M 0 282 Q 90 270 170 292 Q 250 312 340 286 L 340 320 L 0 320 Z" fill="url(#waterGrad)" />
+                      <text x="135" y="306" fill="#715478" fontSize="7.5" fontWeight="600" opacity="0.85">CANAL WATERWAY</text>
+
+                      {/* Minor Streets */}
+                      <line x1="0" y1="120" x2="340" y2="120" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
+                      <line x1="0" y1="120" x2="340" y2="120" stroke="#e6dce4" strokeWidth="1.5" strokeDasharray="5,4" />
+
+                      <line x1="138" y1="0" x2="138" y2="320" stroke="#ffffff" strokeWidth="9" strokeLinecap="round" />
+                      <line x1="138" y1="0" x2="138" y2="320" stroke="#e6dce4" strokeWidth="1.5" strokeDasharray="5,4" />
+
+                      <line x1="0" y1="195" x2="340" y2="195" stroke="#ffffff" strokeWidth="7" strokeLinecap="round" />
+                      <line x1="208" y1="0" x2="208" y2="320" stroke="#ffffff" strokeWidth="7" strokeLinecap="round" />
+
+                      {/* Main Boulevard / Highway (Lotus Way) */}
+                      <path d="M 10 310 Q 120 180 170 160 T 330 20" fill="none" stroke="#ffffff" strokeWidth="13" strokeLinecap="round" />
+                      <path d="M 10 310 Q 120 180 170 160 T 330 20" fill="none" stroke="#f7d4dc" strokeWidth="7" strokeLinecap="round" />
+                      <path d="M 10 310 Q 120 180 170 160 T 330 20" fill="none" stroke="#ed4c67" strokeWidth="1.5" strokeDasharray="4,4" opacity="0.6" />
+
+                      {/* Street Names */}
+                      <text x="32" y="115" fill="#886882" fontSize="6.8" fontWeight="700" letterSpacing="0.4">QUEEN'S WAY</text>
+                      <text x="216" y="78" fill="#886882" fontSize="6.8" fontWeight="700" letterSpacing="0.4">LOTUS BLVD</text>
+                      <text x="28" y="190" fill="#886882" fontSize="6.5" fontWeight="700">SANCTUARY AVE</text>
+
+                      {/* 300m Safe Radius Radar Circle (Centered around User) */}
+                      <circle cx="170" cy="160" r="105" fill="url(#safeRadarGrad)" stroke="#ed4c67" strokeWidth="1.5" strokeDasharray="6,4" opacity="0.85" />
+                      <circle cx="170" cy="160" r="55" fill="none" stroke="#d46f8c" strokeWidth="1" strokeDasharray="4,3" opacity="0.5" />
+                      <circle cx="170" cy="160" r="105" className="radar-sweep-wave" fill="none" stroke="#ed4c67" strokeWidth="2" opacity="0.35" />
+
+                      {/* Route Path from Helper to User */}
+                      <path d="M 170 160 Q 192 144 220 132" fill="none" stroke="#ed4c67" strokeWidth="2.5" strokeDasharray="3,3" strokeLinecap="round" />
+                    </svg>
+
+                    {/* Interactive Marker Pins */}
+                    {/* User Pin */}
+                    <div className="map-pin user-pin" style={{ left: '50%', top: '50%' }}>
+                      <span className="pulse-aura" />
+                      <span className="pin-dot" />
+                      <div className="pin-label">You</div>
+                    </div>
+
+                    {/* Helper Pin */}
+                    <div className="map-pin helper-pin" style={{ left: '65%', top: '41%' }}>
+                      <div className="helper-marker-badge">
+                        <span className="helper-icon-mini">♥</span>
+                        <span className="helper-dist">35m</span>
+                      </div>
+                      <div className="pin-tooltip">Verified Helper</div>
+                    </div>
+
+                    {/* Sanctuary / Restroom Station Pin */}
+                    <div className="map-pin sanctuary-pin" style={{ left: '26%', top: '34%' }}>
+                      <div className="sanctuary-marker-badge">
+                        <span>🛡️</span>
+                      </div>
+                      <div className="pin-tooltip sanctuary-tip">Sanctuary #04</div>
+                    </div>
+
+                    {/* Map UI Floating Controls */}
+                    <div className="map-controls">
+                      <button type="button" className="map-btn" aria-label="Recenter">🧭</button>
+                      <button type="button" className="map-btn" aria-label="Zoom in">+</button>
+                      <button type="button" className="map-btn" aria-label="Zoom out">−</button>
+                    </div>
+
+
                   </div>
-                  <div className="helper-line">
-                    <span className="helper-avatar">A</span>
-                    <div>
-                      <strong>Anonymous helper</strong>
-                      <small>within 50m</small>
+
+                  {/* Active Request Bottom Card inside Phone */}
+                  <div className="map-bottom-card">
+                    <div className="broadcast-status-row">
+                      <div className="broadcast-title-group">
+                        <span className="status-indicator-dot" />
+                        <strong>Request: Sanitary Pad</strong>
+                      </div>
+                      <span className="badge badge-coral">1 Helper Responded</span>
+                    </div>
+                    <p className="status-subtext">Verified helper within 35m accepted your request</p>
+                    <div className="phone-action-row">
+                      <span className="action-pill active">💬 Encrypted Ephemeral Chat</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="request-pills">
-                  <span className="pill active">Pads</span>
-                  <span className="pill">Washroom</span>
-                  <span className="pill">Pain Relief</span>
-                </div>
-
-                <div className="chat-card">
-                  <div className="chat-bubble outgoing">
-                    <span className="dot dot-one" />
-                    <span className="dot dot-two" />
-                    <span className="dot dot-three" />
-                  </div>
-                  <div className="chat-bubble incoming">
-                    <small>Need help now</small>
-                    <strong>Verified woman nearby</strong>
-                  </div>
-                </div>
-
-                <div className="safe-banner">No GPS tracking • Private chat</div>
+                <div className="safe-banner">Zero GPS Tracking • Private Ephemeral Chat</div>
               </div>
             </div>
           </div>
@@ -290,7 +525,6 @@ function App() {
             <article className="benefit-card women-card">
               <div className="benefit-header">
                 <span className="mini-badge">For Women</span>
-                <h3>What Women Get</h3>
               </div>
               <ul>
                 {womenBenefits.map((benefit) => (
@@ -302,7 +536,6 @@ function App() {
             <article className="benefit-card partner-card">
               <div className="benefit-header">
                 <span className="mini-badge alt">For Partners</span>
-                <h3>What Partners &amp; Sponsors Get</h3>
               </div>
               <ul>
                 {partnerBenefits.map((benefit) => (
@@ -357,8 +590,21 @@ function App() {
               </button>
             </div>
 
+            {formFeedback.message && (
+              <div
+                className={`form-alert ${formFeedback.type === 'error' ? 'form-alert-error' : 'form-alert-success'}`}
+                role="status"
+              >
+                <span className="alert-icon">{formFeedback.type === 'error' ? '⚠️' : '✓'}</span>
+                <div>
+                  <strong>{formFeedback.type === 'error' ? 'Notice' : 'Success!'}</strong>
+                  <p>{formFeedback.message}</p>
+                </div>
+              </div>
+            )}
+
             {activeTab === 'community' ? (
-              <form className="portal-form">
+              <form className="portal-form" onSubmit={handleCommunitySubmit}>
                 <div className="field-grid two-col">
                   <label>
                     <span>Full Name</span>
@@ -368,6 +614,7 @@ function App() {
                       value={communityForm.fullName}
                       onChange={handleCommunityChange}
                       placeholder="Enter your full name"
+                      required
                     />
                   </label>
                   <label>
@@ -378,6 +625,7 @@ function App() {
                       value={communityForm.email}
                       onChange={handleCommunityChange}
                       placeholder="you@example.com"
+                      required
                     />
                   </label>
                 </div>
@@ -415,12 +663,16 @@ function App() {
                   <span>Notify me for Beta Access</span>
                 </label>
 
-                <button type="submit" className="button button-primary full-width">
-                  Submit My Interest
+                <button
+                  type="submit"
+                  className="button button-primary full-width"
+                  disabled={formSubmitting}
+                >
+                  {formSubmitting ? 'Sending Request...' : 'Submit My Interest'}
                 </button>
               </form>
             ) : (
-              <form className="portal-form">
+              <form className="portal-form" onSubmit={handlePartnerSubmit}>
                 <div className="field-grid two-col">
                   <label>
                     <span>Organization Name</span>
@@ -430,6 +682,7 @@ function App() {
                       value={partnerForm.organizationName}
                       onChange={handlePartnerChange}
                       placeholder="Your organization name"
+                      required
                     />
                   </label>
                   <label>
@@ -440,6 +693,7 @@ function App() {
                       value={partnerForm.contactPerson}
                       onChange={handlePartnerChange}
                       placeholder="Full name"
+                      required
                     />
                   </label>
                 </div>
@@ -453,6 +707,7 @@ function App() {
                       value={partnerForm.businessEmail}
                       onChange={handlePartnerChange}
                       placeholder="hello@company.com"
+                      required
                     />
                   </label>
                   <label>
@@ -477,14 +732,52 @@ function App() {
                     onChange={handlePartnerChange}
                     placeholder="Tell us how you’d like to partner with LightSafe..."
                     rows="5"
+                    required
                   />
                 </label>
 
-                <button type="submit" className="button button-primary full-width">
-                  Send Partnership Request
+                <button
+                  type="submit"
+                  className="button button-primary full-width"
+                  disabled={formSubmitting}
+                >
+                  {formSubmitting ? 'Sending Partnership Request...' : 'Send Partnership Request'}
                 </button>
               </form>
             )}
+          </div>
+        </section>
+
+        <section className="research-section" id="research">
+          <div className="container section-intro">
+            <span className="section-kicker">Empirical Backing &amp; Research</span>
+            <h2>Backed by Field Data, Public Health Studies &amp; Privacy Science</h2>
+            <p className="lead">
+              Our architecture and mission are built upon validated research exploring commuter vulnerability, menstrual dignity, and zero-knowledge peer-to-peer safety systems.
+            </p>
+          </div>
+
+          <div className="container research-grid">
+            {researchPapers.map((paper) => (
+              <article className="research-card" key={paper.title}>
+                <div className="research-meta">
+                  <span className="mini-badge">{paper.tag}</span>
+                  <span className="research-year">{paper.year}</span>
+                </div>
+                <h3>{paper.title}</h3>
+                <p className="research-source">{paper.source}</p>
+                <p>{paper.summary}</p>
+                <a
+                  href={paper.link}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="research-link"
+                >
+                  <span>Explore Research Source</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </article>
+            ))}
           </div>
         </section>
       </main>
@@ -493,7 +786,7 @@ function App() {
         <div className="container footer-grid">
           <div className="footer-brand">
             <div className="brand" aria-label="LightSafe brand">
-              <span className="brand-mark">L</span>
+              <img src={lightSafeLogo} alt="LightSafe Logo" className="brand-logo-img" />
               <span className="brand-text">LightSafe</span>
             </div>
             <p>Women-to-Women instant health and safety support for everyday emergencies.</p>
@@ -504,7 +797,9 @@ function App() {
             <a href="#about">Why Us</a>
             <a href="#how-it-works">How It Works</a>
             <a href="#benefits">Benefits</a>
+            <a href="#team">Team</a>
             <a href="#community">Community</a>
+            <a href="#research">Research &amp; Evidence</a>
           </div>
 
           <div className="footer-social">

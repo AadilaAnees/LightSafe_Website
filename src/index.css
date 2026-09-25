@@ -1,15 +1,21 @@
 :root {
-  --coral: #ff6f59;
-  --rose: #e8a598;
-  --lavender: #d8b4e2;
-  --plum: #3d1e3a;
-  --plum-deep: #2a1228;
-  --background: #faf7f5;
+  --coral: #ed4c67;
+  --coral-dark: #c82348;
+  --coral-soft: #fde8ec;
+  --rose: #d46f8c;
+  --rose-soft: #f5d2dd;
+  --rose-light: #fdf2f5;
+  --lavender: #cfaad8;
+  --plum: #3c1337;
+  --plum-deep: #250922;
+  --plum-muted: #5c2053;
+  --plum-light: #7a2e6e;
+  --background: #fcf8fa;
   --white: #ffffff;
-  --text: rgba(45, 26, 40, 0.78);
-  --text-strong: #2a1228;
-  --shadow-soft: 0 22px 42px rgba(61, 30, 58, 0.08);
-  --font-sans: 'Inter', 'Segoe UI', sans-serif;
+  --text: rgba(50, 16, 45, 0.82);
+  --text-strong: #250922;
+  --shadow-soft: 0 22px 42px rgba(60, 19, 55, 0.08);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 html {
@@ -24,8 +30,8 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background:
-    radial-gradient(circle at top left, rgba(232, 165, 152, 0.14), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(216, 180, 226, 0.18), transparent 24%),
+    radial-gradient(circle at top left, rgba(212, 111, 140, 0.12), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(207, 170, 216, 0.16), transparent 24%),
     var(--background);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
