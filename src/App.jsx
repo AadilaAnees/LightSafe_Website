@@ -265,8 +265,9 @@ function App() {
             <a href="#research">Research</a>
           </nav>
 
-          <a href="#community" className="button button-primary small-button">
-            Join the Community
+          <a href="#community" className="button button-primary small-button nav-cta">
+            <span className="nav-cta-full">Join the Community</span>
+            <span className="nav-cta-short">Join Us</span>
           </a>
         </div>
       </header>

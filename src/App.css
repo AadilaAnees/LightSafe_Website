@@ -1,6 +1,7 @@
 .page-shell {
   min-height: 100vh;
   color: var(--text);
+  overflow-x: hidden;
 }
 
 .container {
@@ -22,7 +23,8 @@
   align-items: center;
   justify-content: space-between;
   min-height: 82px;
-  gap: 24px;
+  gap: 16px;
+  flex-wrap: nowrap;
 }
 
 .brand {
@@ -30,6 +32,11 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-cta-short {
+  display: none;
 }
 
 .brand-logo-img {
@@ -1345,30 +1352,137 @@
 
 @media (max-width: 640px) {
   .nav-wrap {
-    min-height: 74px;
+    min-height: 68px;
+    gap: 12px;
   }
 
-  .button,
-  .button-primary,
-  .button-secondary {
+  .brand {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .brand-logo-img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-text {
+    font-size: 1.15rem;
+  }
+
+  /* Prevent topbar button from becoming full-width and overlapping brand */
+  .topbar .small-button {
+    width: auto !important;
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .hero-section {
+    padding: 36px 0 28px;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2rem, 7.5vw, 2.9rem);
+    letter-spacing: -0.05em;
+    line-height: 1.05;
+  }
+
+  .lead {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+
+  /* Symmetrical 3-column stats row on mobile */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .stat-item {
+    min-width: 0;
+    padding: 12px 6px 10px;
+    text-align: center;
+    border-radius: 16px;
+  }
+
+  .stat-item strong {
+    font-size: 1.25rem;
+  }
+
+  .stat-item span {
+    font-size: 0.68rem;
+    margin-top: 4px;
+    line-height: 1.2;
+  }
+
+  .hero-visual {
+    min-height: unset;
+    padding: 18px 0 8px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .phone-card {
+    width: min(100%, 350px);
+    padding: 14px 12px 12px;
+    border-radius: 28px;
+  }
+
+  .real-map-canvas {
+    height: 260px;
+  }
+
+  /* Only content action and form buttons stretch to full width */
+  .cta-row .button,
+  .portal-form .button {
     min-height: 50px;
     width: 100%;
   }
 
   .cta-row {
     flex-direction: column;
+    gap: 12px;
   }
 
   .container {
-    width: min(100% - 22px, 1180px);
+    width: min(100% - 24px, 1180px);
+  }
+
+  .section-intro {
+    margin-bottom: 22px;
   }
 
   .section-intro h2 {
-    font-size: 2.1rem;
+    font-size: clamp(1.65rem, 5.5vw, 2.2rem);
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+  }
+
+  .story-card,
+  .step-card,
+  .benefit-card,
+  .team-card,
+  .research-card {
+    padding: 22px 18px;
+    border-radius: 22px;
   }
 
   .portal-panel {
     padding: 20px 16px;
+    border-radius: 24px;
+  }
+
+  .portal-form input,
+  .portal-form select,
+  .portal-form textarea {
+    padding: 12px 14px;
+    border-radius: 14px;
   }
 
   .tabs {
@@ -1381,5 +1495,48 @@
     width: 100%;
     padding: 12px 10px;
     font-size: 0.76rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-wrap {
+    min-height: 62px;
+    gap: 8px;
+  }
+
+  .brand-logo-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-text {
+    font-size: 1.05rem;
+  }
+
+  .nav-cta-full {
+    display: none;
+  }
+
+  .nav-cta-short {
+    display: inline;
+  }
+
+  .topbar .small-button {
+    padding: 0 12px;
+    min-height: 34px;
+    font-size: 0.78rem;
+  }
+
+  .stat-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .stat-item strong {
+    font-size: 1.12rem;
+  }
+
+  .stat-item span {
+    font-size: 0.62rem;
   }
 }
