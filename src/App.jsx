@@ -90,12 +90,20 @@ const researchPapers = [
 
 const socialLinks = [
   {
-    label: '@lightsafe_w2w',
+    label: 'Instagram',
     href: 'https://www.instagram.com/lightsafe_w2w?stkn=MXExNzlzeHY2ejhpYw%3D%3D&utm_source=qr',
     icon: 'instagram',
   },
-  { label: 'Facebook', href: '#', icon: 'facebook' },
-  { label: 'LinkedIn', href: '#', icon: 'linkedin' },
+  {
+    label: 'Facebook',
+    href: 'https://web.facebook.com/people/LightSafe/61594204485563/?mibextid=wwXIfr&rdid=L1VVBrnRK3aAcwMb&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F19ersEYUP5%2F%3Fmibextid%3DwwXIfr%26_rdc%3D1%26_rdr',
+    icon: 'facebook'
+  },
+  {
+    label: 'LinkedIn',
+    href: '#',
+    icon: 'linkedin'
+  },
 ]
 
 const defaultForm = {
